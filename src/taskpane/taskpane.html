@@ -4,12 +4,19 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Outlook Add-in</title>
+    
+    <!-- ✅ Load Office.js from Microsoft CDN -->
+    <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+
     <link rel="stylesheet" href="styles.css">
-    <script src="taskpane.js" defer></script>
+    <script src="taskpane.js" defer></script> <!-- ✅ Ensure this is included -->
 </head>
 <body>
     <h1>Outlook Add-in</h1>
-    <button id="exportButton">Export Email as JS</button>
-    <p id="statusMessage"></p>
+    
+    <button id="exportButton">Export Email as JSON</button> <!-- ✅ Ensure this exists -->
+
+    <p id="statusMessage"></p> <!-- ✅ Status message for success/errors -->
+
 </body>
 </html>

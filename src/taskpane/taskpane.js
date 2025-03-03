@@ -1,48 +1,69 @@
-/* global Office, document, Blob, URL, window, console */
+Office.onReady(() => {
+  console.log("✅ Office Add-in is ready!"); // Debugging log
 
-Office.onReady((info) => {
-  if (info.host === Office.HostType.Outlook) {
-    // Attach the export function to the button
-    document.getElementById("exportButton").onclick = exportEmailAsJS;
+  let button = document.getElementById("exportButton");
+
+  if (button) {
+      console.log("✅ Button found in DOM.");
+      button.addEventListener("click", () => {
+          console.log("🟢 Button clicked!"); // Debugging log
+          exportEmail();
+      });
+  } else {
+      console.error("❌ Button not found in the DOM.");
   }
 });
 
-function exportEmailAsJS() {
-  const item = Office.context.mailbox.item;
+function exportEmail() {
+  console.log("🟡 Starting email export...");
 
-  if (!item) {
-    showMessage("No email item selected.");
-    return;
+  if (!Office.context.mailbox || !Office.context.mailbox.item) {
+      console.error("❌ No email selected or Office.js not available.");
+      document.getElementById("statusMessage").textContent = "No email selected!";
+      return;
   }
 
-  // Get the email body as plain text
-  item.body.getAsync("text", (result) => {
-    if (result.status === Office.AsyncResultStatus.Succeeded) {
-      const emailContent = result.value;
-      const fileName = `${item.subject || "email"}.js`;
+  let emailItem = Office.context.mailbox.item;
+  console.log("📩 Fetching email details for:", emailItem.subject);
 
-      // Create a blob and download it as a .js file
-      const blob = new Blob([`const emailContent = \`${emailContent}\`;`], { type: "application/javascript" });
-      const url = URL.createObjectURL(blob);
+  emailItem.body.getAsync(Office.CoercionType.Text, function (result) {
+      if (result.status === Office.AsyncResultStatus.Succeeded) {
+          console.log("✅ Email body retrieved successfully.");
 
-      const a = document.createElement("a");
-      a.style.display = "none";
-      a.href = url;
-      a.download = fileName;
-      document.body.appendChild(a);
-      a.click();
+          let emailData = {
+              subject: emailItem.subject || "No Subject",
+              sender: emailItem.from ? `${emailItem.from.displayName} <${emailItem.from.emailAddress}>` : "Unknown Sender",
+              body: result.value || "No Body Content",
+              receivedTime: emailItem.dateTimeCreated ? emailItem.dateTimeCreated.toISOString() : "Unknown Time"
+          };
 
-      window.URL.revokeObjectURL(url);
-      showMessage(`Successfully exported as ${fileName}`);
-    } else {
-      showMessage("Failed to get email content.");
-      console.error("Error:", result.error);
-    }
+          console.log("📜 Email Data:", emailData);
+          saveAsJson(emailData);
+      } else {
+          console.error("❌ Failed to retrieve email body:", result.error);
+          document.getElementById("statusMessage").textContent = "Failed to retrieve email.";
+      }
   });
 }
 
-// Display a status message to the user
-function showMessage(message) {
-  const statusElement = document.getElementById("statusMessage");
-  statusElement.textContent = message;
+function saveAsJson(data) {
+  console.log("💾 Saving email as JSON...");
+
+  try {
+      let jsonString = JSON.stringify(data, null, 2);
+      let blob = new Blob([jsonString], { type: "application/json" });
+
+      let a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "email.json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+
+      document.getElementById("statusMessage").textContent = "✅ Email exported successfully!";
+      console.log("🎉 Email exported successfully!");
+  } catch (error) {
+      console.error("❌ Error saving JSON file:", error);
+      document.getElementById("statusMessage").textContent = "Failed to save email as JSON.";
+  }
 }

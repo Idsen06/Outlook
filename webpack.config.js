@@ -1,11 +1,9 @@
-/* eslint-disable no-undef */
-
 const devCerts = require("office-addin-dev-certs");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 
 const urlDev = "https://localhost:3000/";
-const urlProd = "https://www.contoso.com/"; // CHANGE THIS TO YOUR PRODUCTION DEPLOYMENT LOCATION
+const urlProd = "https://www.contoso.com/";
 
 async function getHttpsOptions() {
   const httpsOptions = await devCerts.getHttpsServerOptions();
@@ -14,7 +12,7 @@ async function getHttpsOptions() {
 
 module.exports = async (env, options) => {
   const dev = options.mode === "development";
-  const config = {
+  return {
     devtool: "source-map",
     entry: {
       polyfill: ["core-js/stable", "regenerator-runtime/runtime"],
@@ -25,7 +23,7 @@ module.exports = async (env, options) => {
       clean: true,
     },
     resolve: {
-      extensions: [".html", ".js"],
+      extensions: [".html", ".js", ".css"],
     },
     module: {
       rules: [
@@ -40,6 +38,10 @@ module.exports = async (env, options) => {
           test: /\.html$/,
           exclude: /node_modules/,
           use: "html-loader",
+        },
+        {
+          test: /\.css$/i,
+          use: ["style-loader", "css-loader"],
         },
         {
           test: /\.(png|jpg|jpeg|gif|ico)$/,
@@ -64,7 +66,7 @@ module.exports = async (env, options) => {
           },
           {
             from: "manifest*.xml",
-            to: "[name]" + "[ext]",
+            to: "[name][ext]",
             transform(content) {
               if (dev) {
                 return content;
@@ -91,13 +93,5 @@ module.exports = async (env, options) => {
       },
       port: process.env.npm_package_config_dev_server_port || 3000,
     },
-
-    // Add the stats configuration here
-    stats: {
-      children: true,
-      errorDetails: true,
-    },
   };
-
-  return config;
 };

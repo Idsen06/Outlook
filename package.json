@@ -20,8 +20,11 @@
     "prettier": "office-addin-lint prettier",
     "signin": "office-addin-dev-settings m365-account login",
     "signout": "office-addin-dev-settings m365-account logout",
-    "start": "office-addin-debugging start manifest.xml",
+
+    "start": "office-addin-debugging start manifest.xml --no-sideload",
+
     "stop": "office-addin-debugging stop manifest.xml",
+    "debug": "office-addin-debugging start manifest.xml",
     "validate": "office-addin-manifest validate manifest.xml",
     "watch": "webpack --mode development --watch"
   },
@@ -37,6 +40,7 @@
     "acorn": "^8.11.3",
     "babel-loader": "^9.1.3",
     "copy-webpack-plugin": "^12.0.2",
+    "css-loader": "^7.1.2",
     "eslint-plugin-office-addins": "^3.0.2",
     "file-loader": "^6.2.0",
     "html-loader": "^5.0.0",
@@ -50,6 +54,7 @@
     "os-browserify": "^0.3.0",
     "process": "^0.11.10",
     "source-map-loader": "^5.0.0",
+    "style-loader": "^4.0.0",
     "webpack": "^5.95.0",
     "webpack-cli": "^5.1.4",
     "webpack-dev-server": "5.1.0"
