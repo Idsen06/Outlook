@@ -100,29 +100,27 @@ function saveAsJson(data) {
 }
 
 function cleanseEmailBody(htmlBody) {
-    // Create a temporary DOM element to parse the HTML
+    //temporary DOM element to parse HTML
     const tempDiv = document.createElement("div");
     tempDiv.innerHTML = htmlBody;
 
-    // Remove all <style> and <script> tags
+    //remove <style> <script> tags
     const styleAndScriptTags = tempDiv.querySelectorAll("style, script");
     styleAndScriptTags.forEach(tag => tag.remove());
 
-    // Remove all anchor tags but keep their text content
+    //remove anchor tags (links) but keep their text content
     const anchorTags = tempDiv.querySelectorAll("a");
     anchorTags.forEach(anchor => {
         const textNode = document.createTextNode(anchor.textContent);
         anchor.replaceWith(textNode);
     });
 
-    // Get the plain text content of the email body
     const plainText = tempDiv.textContent || tempDiv.innerText || "";
 
-    // Remove any remaining HTML entities (e.g., &nbsp;, &amp;)
+    //remove any remaining HTML entities - &nbsp; and &amp;
     const decodedText = plainText.replace(/&nbsp;/g, " ").replace(/&amp;/g, "&");
 
-    // Trim extra whitespace
-    return decodedText.trim();
+    return decodedText.trim(); //also trims all extra spaces
 }
 
 //functions i will get back to in order to sort emails based on the phishing detection response
