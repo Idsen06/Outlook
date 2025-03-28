@@ -3,20 +3,31 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Outlook Add-in</title>
+    <title>Phishing detection</title>
     
-    <!-- ✅ Load Office.js from Microsoft CDN -->
+    <!-- Load Office.js from Microsoft CDN -->
     <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+    <script>
+        Office.onReady(function(info) {
+            if (info.host === Office.HostType.Outlook) {
+                // Ensure the required API version is available
+                if (!Office.context.requirements.isSetSupported('Mailbox', '1.3')) {
+                    console.error('The required API version is not supported.');
+                }
+            }
+        });
+    </script>
 
     <link rel="stylesheet" href="styles.css">
-    <script src="taskpane.js" defer></script> <!-- ✅ Ensure this is included -->
+    <script src="taskpane.js" defer></script>
 </head>
 <body>
-    <h1>Outlook Add-in</h1>
+    <h1>Phishing detection</h1>
     
-    <button id="exportButton">Export Email as JSON</button> <!-- ✅ Ensure this exists -->
-
-    <p id="statusMessage"></p> <!-- ✅ Status message for success/errors -->
-
+    <button id="exportButton">Detect phishing</button>
+    <p id="statusMessage"></p>
+    <p id="percentage"></p>
+    <p id="explanation"></p>
+    <p id="reason"></p>
 </body>
 </html>
