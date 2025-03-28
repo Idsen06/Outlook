@@ -51,7 +51,7 @@ function exportEmail() {
   });
 }
 
-let savedJsonData; // Variable to store the JSON data
+let savedJsonData;
 
 function saveAsJson(data) {
   console.log("Saving email as JSON...");
@@ -61,12 +61,14 @@ function saveAsJson(data) {
       savedJsonData = jsonString;
 
       document.getElementById("statusMessage").textContent = "Detecting phishing...";
-      console.log("Email exported successfully!");
-      console.log("Saved JSON Data:", savedJsonData); // Log the saved JSON data
+      console.log("email exported successfully!");
+      console.log("saved JSON Data:", savedJsonData);
 
-      let emailBody = data.body;
+      let emailBody = cleanseEmailBody(data.body);
 
-      // Contact GPT
+      console.log("cleaned Email Body:", emailBody); //log the cleaned email body for debugging (can be removed later)
+
+      //contact GPT
       sendPrompt(emailBody).then(response => {
           console.log("Phishing Detection Response:", response);
           //document.getElementById("statusMessage").textContent = "Detecting phishing...";
@@ -95,6 +97,32 @@ function saveAsJson(data) {
       console.error("Error saving JSON file:", error);
       document.getElementById("statusMessage").textContent = "Failed to save email as JSON.";
   }
+}
+
+function cleanseEmailBody(htmlBody) {
+    // Create a temporary DOM element to parse the HTML
+    const tempDiv = document.createElement("div");
+    tempDiv.innerHTML = htmlBody;
+
+    // Remove all <style> and <script> tags
+    const styleAndScriptTags = tempDiv.querySelectorAll("style, script");
+    styleAndScriptTags.forEach(tag => tag.remove());
+
+    // Remove all anchor tags but keep their text content
+    const anchorTags = tempDiv.querySelectorAll("a");
+    anchorTags.forEach(anchor => {
+        const textNode = document.createTextNode(anchor.textContent);
+        anchor.replaceWith(textNode);
+    });
+
+    // Get the plain text content of the email body
+    const plainText = tempDiv.textContent || tempDiv.innerText || "";
+
+    // Remove any remaining HTML entities (e.g., &nbsp;, &amp;)
+    const decodedText = plainText.replace(/&nbsp;/g, " ").replace(/&amp;/g, "&");
+
+    // Trim extra whitespace
+    return decodedText.trim();
 }
 
 //functions i will get back to in order to sort emails based on the phishing detection response
