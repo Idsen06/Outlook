@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-const API_KEY = 'INSERT KEY HERE DUMBASS';
+const API_KEY = "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";
 
 const sendPrompt = async (prompt, retryCount = 0) => {
   try {
@@ -12,14 +12,14 @@ const sendPrompt = async (prompt, retryCount = 0) => {
 
     
     //for debugging
-    //console.log('Messages:', messages);
+    console.log('Messages:', messages);
 
     const response = await axios.post(
-      'https://api.openai.com/v1/chat/completions',
+      "https://openrouter.ai/api/v1/chat/completions",
       {
-        model: 'GPT-3.5-turbo',
+        model: "openai/gpt-4.1",
         messages: messages,
-        max_tokens: 150
+        //max_tokens: 150
       },
       {
         headers: {
@@ -30,8 +30,8 @@ const sendPrompt = async (prompt, retryCount = 0) => {
     );
 
     //for debugging
-    //console.log('API response:', response.data);
-    //console.log('API response:', response.messages);
+    console.log('API response:', response.data);
+    console.log('API response:', response.messages);
 
     if (response.data.choices == null || response.data.choices.length < 1) {
       return { error: 'no response from ChatGPT' };
