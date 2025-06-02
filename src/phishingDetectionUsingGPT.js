@@ -1,6 +1,6 @@
 const axios = require('axios');
 
-const API_KEY = "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";
+const API_KEY = "INSERT API KEY HERE";
 
 const sendPrompt = async (prompt, retryCount = 0) => {
   try {
